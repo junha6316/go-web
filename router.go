@@ -22,13 +22,16 @@ func (r *router) HandleFunc(method, pattern string, h http.HandlerFunc) {
 
 // execute handleFunction
 func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	if m, ok := r.handlers[req.Method]; ok {
-		if h, ok := m[req.URL.Path]; ok {
-			h(w, req)
-			return
+
+	for pattern, handler := range r.handlers[req.Method]{
+		if ok, _ := match(pattern, req.URL.Path); ok {		
+				handler(w, req)
+				return
+			}
 		}
-	}
+		
 	http.NotFound(w, req)
+	return 
 }
 
 // compare path with url patterns
