@@ -1,6 +1,9 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+	"strings"
+)
 
 type router struct {
 	handlers map[string]map[string]http.HandlerFunc
@@ -17,6 +20,7 @@ func (r *router) HandleFunc(method, pattern string, h http.HandlerFunc) {
 	m[pattern] = h
 }
 
+// execute handleFunction
 func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if m, ok := r.handlers[req.Method]; ok {
 		if h, ok := m[req.URL.Path]; ok {
@@ -25,4 +29,34 @@ func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 	http.NotFound(w, req)
+}
+
+// compare path with url patterns
+func match(pattern, path string) (bool, map[string]string) {
+
+	if pattern == path {
+		return true, nil
+	}
+
+	patterns := strings.Split(pattern, "/")
+	paths := strings.Split(path, "/")
+
+	if len(patterns) != len(paths) {
+		return false, nil
+	}
+
+	params := make(map[string]string)
+
+
+	for i:=0; i < len(patterns); i++{
+		switch{
+		case patterns[i] == paths[i]:
+
+		case len(patterns) > 0 && patterns[i][0] == ":"
+			params[patterns[i][1:]] = paths[i]
+		default:
+			return false, nil
+		}
+	}
+	return true, params
 }
