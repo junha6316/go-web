@@ -23,15 +23,15 @@ func (r *router) HandleFunc(method, pattern string, h http.HandlerFunc) {
 // execute handleFunction
 func (r *router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
-	for pattern, handler := range r.handlers[req.Method]{
-		if ok, _ := match(pattern, req.URL.Path); ok {		
-				handler(w, req)
-				return
-			}
+	for pattern, handler := range r.handlers[req.Method] {
+		if ok, _ := match(pattern, req.URL.Path); ok {
+			handler(w, req)
+			return
 		}
-		
+	}
+
 	http.NotFound(w, req)
-	return 
+	return
 }
 
 // compare path with url patterns
@@ -50,12 +50,11 @@ func match(pattern, path string) (bool, map[string]string) {
 
 	params := make(map[string]string)
 
-
-	for i:=0; i < len(patterns); i++{
-		switch{
+	for i := 0; i < len(patterns); i++ {
+		switch {
 		case patterns[i] == paths[i]:
-
-		case len(patterns) > 0 && patterns[i][0] == ":"
+			// pass
+		case len(patterns[i]) > 0 && patterns[i][0] == ':':
 			params[patterns[i][1:]] = paths[i]
 		default:
 			return false, nil
