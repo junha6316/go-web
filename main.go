@@ -9,9 +9,9 @@ func main() {
 
 	r := &router{make(map[string]map[string]HandlerFunc)}
 
-	r.HandleFunc("GET", "/", func(c *Context) {
+	r.HandleFunc("GET", "/", logHandler(func(c *Context) {
 		fmt.Fprintln(c.ResponseWriter, "welcome!")
-	})
+	}))
 
 	r.HandleFunc("GET", "/about", func(c *Context) {
 		fmt.Fprintln(c.ResponseWriter, "About!")
