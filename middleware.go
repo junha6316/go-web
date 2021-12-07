@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 )
@@ -19,5 +20,18 @@ func logHandler(next HandlerFunc) HandlerFunc {
 			c.Request.URL.String(),
 			time.Since(t))
 	}
+}
 
+// POST에 전송된 Form 데이터를 Context의 Param에 담는 미들웨어
+func parseFormHandler(next HandlerFunc) HandlerFunc {
+	return func(c *Context) {
+		c.Request.ParseForm()
+		fmt.Println(c.Request.PostForm)
+		for k, v := range c.Request.PostForm {
+			if len(v) > 0 {
+				c.Params[k] = v[0]
+			}
+		}
+		next(c)
+	}
 }
