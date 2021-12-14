@@ -2,36 +2,33 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 )
 
 func main() {
+	s := NewServer()
 
-	r := &router{make(map[string]map[string]HandlerFunc)}
-
-	r.HandleFunc("GET", "/", logHandler(func(c *Context) {
+	s.HandleFunc("GET", "/", func(c *Context) {
 		fmt.Fprintln(c.ResponseWriter, "welcome!")
-	}))
-
-	r.HandleFunc("GET", "/about", func(c *Context) {
-		fmt.Fprintln(c.ResponseWriter, "About!")
 	})
 
-	r.HandleFunc("GET", "/users/:id", func(c *Context) {
-		fmt.Fprintln(c.ResponseWriter, "retrieve user!", c.Params["id"])
+	s.HandleFunc("GET", "/about1", func(c *Context) {
+		fmt.Fprintln(c.ResponseWriter, "about")
 	})
 
-	r.HandleFunc("GET", "/users/:user_id/addresses/:address_id", func(c *Context) {
-		fmt.Fprintln(c.ResponseWriter, "retrieve user's address!", c.Params["user_id"], c.Params["id"])
+	s.HandleFunc("GET", "/users/:id", func(c *Context) {
+		fmt.Fprintln(c.ResponseWriter, "retrieve user")
 	})
 
-	r.HandleFunc("POST", "/users", func(c *Context) {
+	s.HandleFunc("GET", "/users/:user_id/addresses/:address_id", func(c *Context) {
+		fmt.Fprintln(c.ResponseWriter, "retrieve user's address")
+	})
+
+	s.HandleFunc("POST", "/users", func(c *Context) {
 		fmt.Fprintln(c.ResponseWriter, "create user")
 	})
-
-	r.HandleFunc("POST", "/users/:user_id/addresses", func(c *Context) {
+	s.HandleFunc("POST", "/users/:user_id/addresses", func(c *Context) {
 		fmt.Fprintln(c.ResponseWriter, "create user's address")
 	})
 
-	http.ListenAndServe(":8000", r)
+	s.Run(":8080")
 }
